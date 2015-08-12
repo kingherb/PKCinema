@@ -1,0 +1,263 @@
+
+drop sequence reviewpk_seq;
+create sequence reviewpk_seq increment by 1 start with 1;
+
+drop table boardpk;					// 영화 후기 게시판
+create table boardpk (     
+	num 		number(10)	primary key,
+	movieid		varchar2(10),
+	userid		varchar2(20),
+	content		varchar2(3000),
+	writedate	date		default sysdate,
+	starnum		number(3)	default 0,
+	readnum		number(5)	default 0,
+	hit		number(5)	default 0
+);
+
+drop sequence boardpk_seq;
+create sequence boardrepk_seq increment by 1 start with 1;
+
+drop table boardrepk;
+create table boardrepk (
+	num		number(10)	primary key,
+	boardnum	number(10)	not null,
+	usernum		number(10)	not null,
+	username	varchar2(20)	not null,
+	type		varchar2(10),
+	content		varchar2(3000)	not null,
+	writedate	date		default sysdate
+);
+
+alter table boardrepk drop constraint boardnum_pk;
+alter table boardrepk add constraint boardnum_pk 
+		foreign key(boardnum) references boardpk(num) on delete cascade;
+
+drop sequence eventpk_seq;
+create sequence eventpk_seq increment by 1 start with 1;
+
+drop table eventpk;
+create table eventpk (					// 행사 게시판
+	num		number(10)	primary key,
+	filename	varchar2(50),
+	filenameTh	varchar2(50),
+	title		varchar2(100)	not null,
+	content		varchar2(3000)	not null,
+	startdate	date		not null,
+	enddate		date		not null,
+	starnum		number(3)	default 0,
+	readnum		number(5)	default 0,
+	hit		number(5)	default 0
+);
+
+drop sequence eventrepk_seq;
+create sequence eventrepk_seq increment by 1 start with 1;
+
+drop table eventrepk;
+create table eventrepk (
+	num		number(10)	primary key,
+	eventnum	number(10)	not null,
+	usernum		number(10)	not null,
+	username	varchar2(20)	not null,
+	type		varchar2(10),
+	content		varchar2(3000)	not null,
+	writedate	date		default sysdate
+);
+
+alter table eventrepk drop constraint eventrepk_pk;
+alter table eventrepk add constraint eventrepk_pk
+		foreign key(eventnum) references eventpk(num) on delete cascade;
+
+drop sequence roompk_seq;
+create sequence roompk_seq increment by 1 start with 1;
+
+drop table roompk;
+create table roompk (
+	num	number(5)	primary key,
+	address	varchar2(10)	not null,		// 서울, 제주도
+	city	varchar2(10)	not null,		// 신촌, 강남
+	type	varchar2(1)	not null,		// a , b룸
+	cap	number(4)	not null
+);
+
+drop sequence reservationpk_seq;
+create sequence reservationpk_seq increment by 1 start with 1;
+
+drop table reservationpk;
+create table reservationpk (
+	num		number(10)	primary key,
+	roomnum		number(10)	not null,
+	movienum	number(10)	not null,
+	userid		varchar2(10)	not null,
+	totalcost	number(8)	not null,
+	person		number(4),
+	reserdate	date		not null
+);
+
+drop sequence usernpk_seq;
+create sequence userpk_seq increment by 1 start with 1;
+
+drop table userpk;
+create table userpk (
+	num	number(10)	primary key,
+	id	varchar2(16)	not null,
+	pwd	varchar2(16)	not null,
+	name	varchar2(30),
+	birth	date		not null,
+	addr	varchar2(100),
+	email	varchar2(40),
+	tel	varchar2(20),
+	level	number(1)	default 1
+);
+
+drop sequence mediapk_seq;
+create sequence mediapk_seq increment by 1 start with 1;
+
+drop table mediapk;
+create table mediapk (							// 영화 소개 게시판
+	num       	number(10)	primary key,
+	title		varchar2(70)	not null,
+	startdate	date		not null,
+	enddate		date		not null,
+	poster		varchar2(50)	default 'poster.jpg',
+	filename	varchar2(70),
+	grade		number(2)	default 19,
+	content		varchar2(3000),
+	director	varchar2(100),
+	actor		varchar2(500),
+	genre		varchar2(100),
+	runtime		varchar2(5),
+	nation		varchar2(10),
+	starnum		number(3)
+);
+
+drop sequence mediarepk_seq;
+create sequence mediarepk_seq increment by 1 start with 1;
+
+drop table mediarepk;
+create table mediarepk (
+	num		number(10)	primary key,
+	medianum	number(10)	not null,
+	usernum		number(10)	not null,
+	username	varchar2(20)	not null,
+	type		varchar2(10),
+	content		varchar2(3000)	not null,
+	writedate	date		default sysdate
+);
+
+alter table mediarepk drop constraint mediarepk_pk;
+alter table mediarepk add constraint mediarepk_pk
+		foreign key(medianum) references mediapk(num) on delete cascade;
+
+/*
+INSERT INTO media(mediano, 
+           title, rdate, poster, filename, filesize, mview, mediagroupno)
+VALUES((SELECT NVL(MAX(mediano), 0)+1 as mediano FROM media),
+           'LaSong - 비', sysdate, 'poster.jpg', 'lasong.mp3', 15000, 'Y', 1);
+ 
+INSERT INTO media(mediano, 
+           title, rdate, poster, filename, filesize, mview, mediagroupno)
+VALUES((SELECT NVL(MAX(mediano), 0)+1 as mediano FROM media),
+           'LaSong - 비', sysdate, 'lason.jpg', 'lasong.mp3', 15000, 'Y', 1);
+ 
+INSERT INTO media(mediano, 
+           title, rdate, poster, filename, filesize, mview, mediagroupno)
+VALUES((SELECT NVL(MAX(mediano), 0)+1 as mediano FROM media),
+           'LaSong - 비', sysdate, 'lason.jpg', 'lasong.mp3', 15000, 'Y', 1);
+ 
+
+SELECT mediano, title, rdate, poster, filename, filesize, mview, mediagroupno
+FROM media
+WHERE mediagroupno = 1
+ORDER BY mediano DESC;
+
+
+INSERT INTO mediagroup(mediagroupno, title)
+VALUES((SELECT NVL(MAX(mediagroupno), 0)+1 as mediagroupno FROM mediagroup), '2014 Drive 음악');
+
+INSERT INTO mediagroup(mediagroupno, title)
+VALUES((SELECT NVL(MAX(mediagroupno), 0)+1 as mediagroupno FROM mediagroup), '2015 Music 음악');
+
+INSERT INTO mediagroup(mediagroupno, title)
+VALUES((SELECT NVL(MAX(mediagroupno), 0)+1 as mediagroupno FROM mediagroup), '2016 Dance 음악');
+
+SELECT mediagroupno, title
+FROM mediagroup
+ORDER BY mediagroupno ASC;
+
+
+SELECT mediano, title, poster, filename, filesize, mview, mediagroupno FROM media;
+
+INSERT INTO reply(replyno, content, passwd, rdate, mediano)
+VALUES((SELECT NVL(MAX(replyno), 0)+1 as replyno FROM reply),
+'좋은 음악 ', '1234', sysdate, 10);
+ 
+INSERT INTO reply(replyno, content, passwd, rdate, mediano)
+VALUES((SELECT NVL(MAX(replyno), 0)+1 as replyno FROM reply),
+'좋은 음악 ', '1234', sysdate, 10);
+ 
+INSERT INTO reply(replyno, content, passwd, rdate, mediano)
+VALUES((SELECT NVL(MAX(replyno), 0)+1 as replyno FROM reply),
+'좋은 음악 ', '1234', sysdate, 10);
+ 
+ 
+SELECT replyno, content, passwd, rdate, mediano
+FROM reply
+WHERE mediano = 10
+ORDER BY replyno DESC;
+
+SELECT mediagroupno, title
+FROM mediagroup
+WHERE mediagroupno = 1;
+
+
+UPDATE mediagroup
+SET title = '2012~2015 여행 음악'
+WHERE mediagroupno = 1;
+
+DELETE FROM mediagroup
+WHERE mediagroupno = 1;
+
+       
+SELECT mediano, title, rdate, poster, filename, filesize, mview, mediagroupno
+FROM media
+WHERE mediano=1;
+
+commit;
+
+
+
+
+
+
+
+
+
+
+
+
+drop table qna;
+create table qna (
+ num number primary key,
+	 type varchar2(10) not null,
+	 title varchar2(100) not null,
+	 name varchar2(20) not null,
+		 content varchar2(3000) not null,
+	 nalja date not null,
+	 hit number not null,
+	 secret number,
+		 reply varchar2(3000)
+);
+
+drop sequence qna_pk;
+create sequence qna_pk;
+
+insert into qna values (qna_pk.nextval, '기타', '문의드립니다', '성정환', 'ㅋㅋㅋㅋ', sysdate, 0, 0, 'ㅋㅋㅋㅋ');
+insert into qna values (qna_pk.nextval, '시설', '문의드립니다', '손상헌', 'ㅋㅋㅋㅋ', sysdate, 0, 0, 'ㅋㅋㅋㅋ');
+insert into qna values (qna_pk.nextval, '예약', '문의드립니다', '김상기', 'ㅋㅋㅋㅋ', sysdate, 0, 1, 'ㅋㅋㅋㅋ');
+insert into qna values (qna_pk.nextval, '객실', '문의드립니다', '허유진', 'ㅋㅋㅋㅋ', sysdate, 0, 0, 'ㅋㅋㅋㅋ');
+insert into qna values (qna_pk.nextval, '시설', '문의드립니다', '이진희', 'ㅋㅋㅋㅋ', sysdate, 0, 0, 'ㅋㅋㅋㅋ');
+insert into qna values (qna_pk.nextval, '예약', '문의드립니다', '김태희', 'ㅋㅋㅋㅋ', sysdate, 0, 1, 'ㅋㅋㅋㅋ');
+insert into qna values (qna_pk.nextval, '기타', '문의드립니다', '전지현', 'ㅋㅋㅋㅋ', sysdate, 0, 0, 'ㅋㅋㅋㅋ');
+insert into qna values (qna_pk.nextval, '예약', '문의드립니다', '박한별', 'ㅋㅋㅋㅋ', sysdate, 0, 0, 'ㅋㅋㅋㅋ');
+
+commit;

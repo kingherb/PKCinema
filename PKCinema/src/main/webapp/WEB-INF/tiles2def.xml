@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE  tiles-definitions PUBLIC
+    "-//Aapche Software Foundation//DTD Tiles Configuration 2.0//EN"
+    "http://tiles.apache.org/dtds/tiles-config_2_0.dtd">
+
+<tiles-definitions>
+    <!-- *********************************************** 
+         상속을 이용하여 header, footer를 자동으로 조합 
+         *********************************************** -->
+         
+    <!-- 메인 레이아웃 시작 -->
+    <definition name="cgv" template="/menu/summerLayout.jsp">
+        <put-attribute name="header" value="/menu/summerHeader.jsp" />
+        <put-attribute name="footer" value="/menu/footer.jsp" />
+    </definition>
+    
+    
+    <!-- 메인 레이아웃 끝 -->
+
+
+    <!-- 상세 페이지 레이아웃 -->
+
+    <!-- *****************mediagroup 관련 View 선언***************** -->
+    <!-- mav.setViewName("/index"); -->
+    <definition name="/one" extends="cgv">
+        <put-attribute name="title" value="index.jsp" />
+        <put-attribute name="body" value="/menu/one.jsp" />
+    </definition>
+        
+    
+</tiles-definitions>
+
